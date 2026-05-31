@@ -1,0 +1,16 @@
+[Unit]
+Description=My Custom C Daemon (Variant 23)
+After=network.target
+
+[Service]
+Type=forking
+PIDFile=/tmp/daemon_app.pid
+# WARNING: For real usage, an absolute path should be provided here.
+# Example: ExecStart=/home/user/DPP/build/daemon_app -c /tmp/daemon.conf
+ExecStart=/usr/local/bin/daemon_app -c /tmp/daemon.conf
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

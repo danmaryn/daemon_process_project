@@ -7,6 +7,7 @@
 #include "config.h"
 #include "pidfile.h"
 
+// Prints the command-line usage help message.
 void print_help(const char* prog_name) {
     printf("Usage: %s [OPTIONS]\n", prog_name);
     printf("Options:\n");
@@ -14,6 +15,7 @@ void print_help(const char* prog_name) {
     printf("  -h          Show this help message\n");
 }
 
+// Main entry point for the daemon application.
 int main(int argc, char *argv[]) {
     int opt;
     char config_path[256] = "/tmp/daemon.conf";
