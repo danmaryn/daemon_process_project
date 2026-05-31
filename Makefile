@@ -1,7 +1,7 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -O2 -Iinclude
 TARGET = build/daemon_app
-SRCS = src/main.c src/daemon_core.c src/logger.c
+SRCS = src/main.c src/daemon_core.c src/logger.c src/config.c
 OBJS = $(patsubst src/%.c, build/%.o, $(SRCS))
 
 all: build_dir $(TARGET)

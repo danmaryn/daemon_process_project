@@ -1,16 +1,18 @@
 #include <unistd.h>
 #include "daemon_core.h"
 #include "logger.h"
+#include "config.h"
 
 int main() {
     make_daemon();
     setup_signal_handling();
 
+    load_config("/tmp/daemon.conf");
     init_logger("/tmp/daemon.log");
 
     while (running) {
         log_message("Process is running...");
-        sleep(1);
+        sleep(daemon_sleep_interval);
     }
 
     log_message("Process terminated gracefully.");
