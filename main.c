@@ -28,6 +28,12 @@ void make_daemon() {
     close(STDERR_FILENO);
 }
 
+void get_time_string(char* buffer, size_t size) {
+    time_t now = time(NULL);
+    struct tm *tm_info = localtime(&now);
+    strftime(buffer, size, "%Y-%m-%d %H:%M:%S", tm_info);
+}
+
 int main() {
     make_daemon();
 
@@ -37,14 +43,17 @@ int main() {
     FILE *log_file = fopen("/tmp/daemon.log", "a");
     if (!log_file) return 1;
 
+    char time_buffer[26];
+
     while (running) {
-        time_t now = time(NULL);
-        fprintf(log_file, "Process is running timestamp: %ld\n", now);
+        get_time_string(time_buffer, sizeof(time_buffer));
+        fprintf(log_file, "[%s] Process is running...\n", time_buffer);
         fflush(log_file);
         sleep(1);
     }
 
-    fprintf(log_file, "Process terminated gracefully.\n");
+    get_time_string(time_buffer, sizeof(time_buffer));
+    fprintf(log_file, "[%s] Process terminated gracefully.\n", time_buffer);
     fclose(log_file);
     
     return 0;
