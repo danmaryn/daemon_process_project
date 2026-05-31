@@ -11,20 +11,27 @@ static void get_time_string(char* buffer, size_t size) {
     strftime(buffer, size, "%Y-%m-%d %H:%M:%S", tm_info);
 }
 
+static void log_message(const char* level_str, int syslog_level, const char* message) {
+    if (log_file) {
+        char time_buffer[26];
+        get_time_string(time_buffer, sizeof(time_buffer));
+        fprintf(log_file, "[%s] [%s] %s\n", time_buffer, level_str, message);
+        fflush(log_file);
+    }
+    syslog(syslog_level, "[%s] %s", level_str, message);
+}
+
 void init_logger(const char* file_path) {
     log_file = fopen(file_path, "a");
     openlog("daemon_app", LOG_PID | LOG_CONS, LOG_DAEMON);
 }
 
-void log_message(const char* message) {
-    if (log_file) {
-        char time_buffer[26];
-        get_time_string(time_buffer, sizeof(time_buffer));
-        fprintf(log_file, "[%s] %s\n", time_buffer, message);
-        fflush(log_file);
-    }
-    
-    syslog(LOG_INFO, "%s", message);
+void log_info(const char* message) {
+    log_message("INFO", LOG_INFO, message);
+}
+
+void log_error(const char* message) {
+    log_message("ERROR", LOG_ERR, message);
 }
 
 void close_logger() {

@@ -33,29 +33,31 @@ int main(int argc, char *argv[]) {
     }
 
     make_daemon();
+    init_logger("/tmp/daemon.log");
 
     if (check_and_create_pid_file("/tmp/daemon_app.pid") < 0) {
+        log_error("Daemon is already running or cannot create PID file.");
+        close_logger();
         return 1;
     }
 
     setup_signal_handling();
     load_config(config_path);
-    init_logger("/tmp/daemon.log");
 
-    log_message("Daemon started.");
+    log_info("Daemon started.");
 
     while (running) {
         if (reload_requested) {
             load_config(config_path);
-            log_message("Configuration reloaded.");
+            log_info("Configuration reloaded.");
             reload_requested = 0;
         }
 
-        log_message("Process is running...");
+        log_info("Process is running...");
         sleep(daemon_sleep_interval);
     }
 
-    log_message("Process terminated gracefully.");
+    log_info("Process terminated gracefully.");
     close_logger();
     remove_pid_file("/tmp/daemon_app.pid");
     
