@@ -1,6 +1,7 @@
 #include "logger.h"
 #include <stdio.h>
 #include <time.h>
+#include <syslog.h>
 
 static FILE *log_file = NULL;
 
@@ -12,14 +13,18 @@ static void get_time_string(char* buffer, size_t size) {
 
 void init_logger(const char* file_path) {
     log_file = fopen(file_path, "a");
+    openlog("daemon_app", LOG_PID | LOG_CONS, LOG_DAEMON);
 }
 
 void log_message(const char* message) {
-    if (!log_file) return;
-    char time_buffer[26];
-    get_time_string(time_buffer, sizeof(time_buffer));
-    fprintf(log_file, "[%s] %s\n", time_buffer, message);
-    fflush(log_file);
+    if (log_file) {
+        char time_buffer[26];
+        get_time_string(time_buffer, sizeof(time_buffer));
+        fprintf(log_file, "[%s] %s\n", time_buffer, message);
+        fflush(log_file);
+    }
+    
+    syslog(LOG_INFO, "%s", message);
 }
 
 void close_logger() {
@@ -27,4 +32,5 @@ void close_logger() {
         fclose(log_file);
         log_file = NULL;
     }
+    closelog();
 }
