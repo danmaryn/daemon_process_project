@@ -11,6 +11,12 @@ int main() {
     init_logger("/tmp/daemon.log");
 
     while (running) {
+        if (reload_requested) {
+            load_config("/tmp/daemon.conf");
+            log_message("Configuration reloaded.");
+            reload_requested = 0;
+        }
+
         log_message("Process is running...");
         sleep(daemon_sleep_interval);
     }

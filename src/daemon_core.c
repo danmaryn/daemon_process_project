@@ -5,14 +5,20 @@
 #include <sys/stat.h>
 
 volatile sig_atomic_t running = 1;
+volatile sig_atomic_t reload_requested = 0;
 
 static void handle_signal(int sig) {
-    running = 0;
+    if (sig == SIGHUP) {
+        reload_requested = 1;
+    } else {
+        running = 0;
+    }
 }
 
 void setup_signal_handling() {
     signal(SIGTERM, handle_signal);
     signal(SIGINT, handle_signal);
+    signal(SIGHUP, handle_signal);
 }
 
 void make_daemon() {
