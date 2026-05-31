@@ -2,13 +2,20 @@
 #include "daemon_core.h"
 #include "logger.h"
 #include "config.h"
+#include "pidfile.h"
 
 int main() {
     make_daemon();
-    setup_signal_handling();
 
+    if (check_and_create_pid_file("/tmp/daemon_app.pid") < 0) {
+        return 1;
+    }
+
+    setup_signal_handling();
     load_config("/tmp/daemon.conf");
     init_logger("/tmp/daemon.log");
+
+    log_message("Daemon started.");
 
     while (running) {
         if (reload_requested) {
@@ -23,6 +30,7 @@ int main() {
 
     log_message("Process terminated gracefully.");
     close_logger();
+    remove_pid_file("/tmp/daemon_app.pid");
     
     return 0;
 }
